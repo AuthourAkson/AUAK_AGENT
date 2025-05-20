@@ -1,0 +1,227 @@
+@font-face {
+  font-family: 'Hooskai'; 
+  src: url('../fonts/Hooskai.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SourceHanSans';  
+  src: url('../fonts/SourceHanSansCN-Medium.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ============== 聊天容器 ============== */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 120px;
+    width: 100%;
+}
+
+/* ============== 消息容器 ============== */
+.messages-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    overflow-y: auto;
+    min-height: 300px;
+    height: calc(100% - 60px);
+}
+
+/* ============== 消息样式 ============== */
+.message {
+    display: flex;
+    gap: 16px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    transition: background 0.2s;
+    animation: fadeIn 0.3s ease-out forwards;
+    max-width: 85%;
+    margin-bottom: 8px;
+}
+
+.user-message {
+    background: #ebf0f4;
+    align-self: flex-end;
+    flex-direction: row-reverse;
+    margin-left: 15%;
+    border: 1px solid #ececec;
+}
+
+.assistant-message {
+    background: #ffffff;
+    align-self: flex-start;
+    margin-right: 15%;
+    border: 1px solid #f0f0f0;
+}
+
+/* ============== 头像样式 ============== */
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: bold;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar {
+    background-color: #4299e1;
+    color: white;
+}
+
+.assistant-avatar {
+    background-color: #edf2f7;
+    color: #47b0f1;
+}
+
+/* ============== 消息内容 ============== */
+.message-content {
+    flex: 1;
+    padding-top: 4px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    font-size: 15px;
+    font-family:SourceHanSans, sans-serif;
+    word-break: break-word;
+}
+
+.user-message .message-content {
+    font-weight: 500;
+}
+
+.assistant-message .message-content {
+    color: #000000;
+}
+
+/* ============== 输入区域 ============== */
+.input-area {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 0 20px;
+    z-index: 90;
+    box-sizing: border-box;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    max-width: 800px;
+    margin: 0 auto;
+    width: calc(100% - 40px);
+}
+
+/* ============== 表单元素 ============== */
+textarea {
+    flex: 1;
+    border: none;
+    resize: none;
+    outline: none;
+    padding: 10px 12px;
+    max-height: 200px;
+    min-height: 40px;
+    line-height: 1.5;
+    font-size: 15px;
+    font-family: inherit;
+    background: transparent;
+    color: #000000;
+}
+
+button {
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    margin-left: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+button:hover {
+    background-color: #3182ce;
+    transform: translateY(-1px);
+}
+
+/* ============== 动画 ============== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============== 调试样式 ============== */
+.debug-mode .messages-container {
+    border: 1px dashed #ccc;
+    background-color: #f9f9f9;
+}
+
+.debug-placeholder {
+    color: #999;
+    padding: 20px;
+    text-align: center;
+    display: none;
+}
+
+.debug-mode .debug-placeholder {
+    display: block;
+}
+
+/* ============== 响应式设计 ============== */
+@media (max-width: 768px) {
+    .message {
+        max-width: 90%;
+        margin-left: 5% !important;
+        margin-right: 5% !important;
+    }
+    
+    .input-container {
+        width: calc(100% - 20px);
+    }
+    
+    .avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .message {
+        padding: 8px 12px;
+        max-width: 92%;
+        margin-left: 4% !important;
+        margin-right: 4% !important;
+    }
+    
+    .avatar {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .message-content {
+        font-size: 14px;
+    }
+}
+
+#messagesContainer {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}

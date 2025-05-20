@@ -5,13 +5,14 @@ import EmbeddingRetriever from "./EmbeddingRetriever";
 import fs from "fs";
 import readline from "readline";
 
+
 const outDirName = "output"; // 相对路径
 
 const fetchMCP = new MCPClient("mcp-server-fetch", "uvx", ["mcp-server-fetch"]);
 const fileMCP = new MCPClient(
   "mcp-server-file",
   "npx",
-  ["-y", "@modelcontextprotocol/server-filesystem", outDirName]
+  ["-y", "@modelcontextprotocol/server-filesystem","D:/LLM+RAG+MCP",outDirName]
 );
 const markdownifyMCP = new MCPClient(
   "markdownify",
@@ -20,21 +21,37 @@ const markdownifyMCP = new MCPClient(
 );
 
 // 初始化 EmbeddingRetriever 并加载知识库
-async function initializeRetriever() {
+async function initializeRetriever(): Promise<EmbeddingRetriever> {
   const embeddingRetriever = new EmbeddingRetriever("BAAI/bge-m3");
   const knowledgeDir = path.join(process.cwd(), "knowledge");
   const files = fs.readdirSync(knowledgeDir);
+
   for (const file of files) {
-    if (path.extname(file).toLowerCase() === ".md") {
-      const content = fs.readFileSync(path.join(knowledgeDir, file), "utf-8");
-      await embeddingRetriever.embedDocument(content);
+    const filePath = path.join(knowledgeDir, file);
+    if (fs.statSync(filePath).isFile()) {
+      const ext = path.extname(file).toLowerCase();
+      try {
+        if (ext === ".md" || ext === ".txt") {
+          const content = fs.readFileSync(filePath, "utf-8");
+          await embeddingRetriever.embedDocument(content);
+          console.log(`嵌入文本文件: ${file}`);
+        } else if ([".pdf", ".doc", ".docx", ".ppt", ".pptx", ".xmind"].includes(ext)) {
+          await embeddingRetriever.processFile(filePath);
+          console.log(`嵌入复杂文件: ${file}`);
+        } else {
+          console.log(`跳过不支持的文件格式: ${file}`);
+        }
+      } catch (error) {
+        console.error(`处理文件 ${file} 时出错:`, error);
+      }
     }
   }
+  console.log("知识库加载完成！");
   return embeddingRetriever;
 }
 
 // 根据用户问题从知识库中检索相关上下文
-async function retrieveContext(query: string, retriever: EmbeddingRetriever) {
+async function retrieveContext(query: string, retriever: EmbeddingRetriever): Promise<string> {
   const context = (await retriever.retrieve(query, 3)).join("\n");
   return context;
 }
