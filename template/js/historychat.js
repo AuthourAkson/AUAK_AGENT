@@ -16,10 +16,10 @@ function initConversations() {
     } else {
         window.currentConversationId = window.conversations[0].id;
     }
-
+    
     renderConversationList();
     loadConversation(window.currentConversationId);
-
+    
     // 触发自定义事件通知系统就绪
     document.dispatchEvent(new CustomEvent('conversationsReady'));
 }
@@ -33,43 +33,47 @@ function generateId() {
 function renderConversationList() {
     const listElement = document.getElementById('conversationList');
     if (!listElement) return;
-
+    
     listElement.innerHTML = '';
-
-    const sortedConversations = [...window.conversations].sort((a, b) =>
+    
+    const sortedConversations = [...window.conversations].sort((a, b) => 
         new Date(b.createdAt) - new Date(a.createdAt));
-
+    
     sortedConversations.forEach(conv => {
         const item = document.createElement('li');
         item.className = `conversation-item ${conv.id === window.currentConversationId ? 'active' : ''}`;
-
+        
         const date = new Date(conv.createdAt);
-        const dateStr = `${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
-
+        const dateStr = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+        
         let title = conv.title || '新对话';
         if (!conv.title && conv.messages.length > 0) {
             const firstMessage = conv.messages[0].content;
             title = firstMessage.length > 20 ? firstMessage.substring(0, 20) + '...' : firstMessage;
         }
-
+        
         item.innerHTML = `
             <div class="conversation-header">
                 <span class="conversation-date">${dateStr}</span>
                 <div class="conversation-actions">
-                    <button class="rename-conversation-btn" aria-label="重命名对话">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="set-prompt-btn" aria-label="设置Prompt">
+                    <div class="action-column">
+                        <button class="rename-conversation-btn" aria-label="重命名对话">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="set-prompt-btn" aria-label="设置Prompt">
                             <i class="fas fa-cog"></i>
-                    </button>
-                    <button class="delete-conversation-btn" aria-label="删除对话">
-                        <i class="fas fa-trash"></i>
-                    </button>
+                        </button>
+                    </div>
+                    <div class="action-column">
+                        <button class="delete-conversation-btn" aria-label="删除对话">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             <span class="conversation-title">${title}</span>
         `;
-
+        
         // 点击事件处理
         item.addEventListener('click', () => {
             if (conv.id !== window.currentConversationId) {
@@ -78,7 +82,7 @@ function renderConversationList() {
             }
             if (typeof showSecondary === 'function') showSecondary();
         });
-
+        
         // 删除按钮事件
         const deleteBtn = item.querySelector('.delete-conversation-btn');
         if (deleteBtn) {
@@ -94,17 +98,17 @@ function renderConversationList() {
                     });
             });
         }
-
+        
         // 重命名按钮事件
         const renameBtn = item.querySelector('.rename-conversation-btn');
         if (renameBtn) {
             renameBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 e.preventDefault(); // 新增
-
+                
                 // 添加调试信息
                 console.log('Rename button clicked for conversation:', conv.id);
-
+                
                 renameConversation(conv.id, conv.title || '')
                     .then(success => {
                         console.log('Rename operation completed:', success);
@@ -126,9 +130,37 @@ function renderConversationList() {
             });
         }
 
+        // 设置Prompt按钮事件
+        const setPromptBtn = item.querySelector('.set-prompt-btn');
+        if (setPromptBtn) {
+            setPromptBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+
+                // 获取当前对话
+                const conversation = window.conversations.find(c => c.id === conv.id);
+                if (!conversation) {
+                    console.warn('对话不存在，无法设置指令');
+                    return;
+                }
+
+                // 打开对话框
+                setConversationPrompt(conv.id, conversation.prompt || '')
+                    .then(success => {
+                        if (success) {
+                            // 视觉反馈
+                            const dateElement = item.querySelector('.conversation-date');
+                            dateElement.classList.add('prompt-updated');
+                            setTimeout(() => dateElement.classList.remove('prompt-updated'), 800);
+                        }
+                    })
+                    .catch(err => console.error('指令设置失败:', err));
+            });
+        }
+        
         listElement.appendChild(item);
     });
-
+    
     saveConversations();
 }
 
@@ -208,18 +240,18 @@ function createConversation(title) {
         messages: [],
         createdAt: new Date().toISOString()
     };
-
+    
     window.conversations.unshift(newConversation);
     window.currentConversationId = newConversation.id;
-
+    
     renderConversationList();
     saveConversations();
     clearChatView();
-
+    
     if (typeof showSecondary === 'function') {
         showSecondary();
     }
-
+    
     return newConversation;
 }
 
@@ -227,7 +259,7 @@ function createConversation(title) {
 function loadConversation(conversationId) {
     const conversation = window.conversations.find(c => c.id === conversationId);
     if (!conversation) return;
-
+    
     window.currentConversationId = conversationId;
     renderConversationList();
     renderMessages(conversation.messages);
@@ -243,7 +275,7 @@ function clearChatView() {
 // 渲染消息（统一使用ChatUI渲染）
 function renderMessages(messages) {
     if (!window.chatUI || !window.chatUI.renderMessage) return;
-
+    
     clearChatView();
     messages.forEach(msg => {
         window.chatUI.renderMessage(msg);
@@ -258,7 +290,7 @@ function saveConversations() {
 // 更新对话标题（增加输入校验）
 function updateConversationTitle(newTitle) {
     if (!newTitle || newTitle.trim().length === 0) return;
-
+    
     const conversation = window.conversations.find(c => c.id === window.currentConversationId);
     if (conversation) {
         conversation.title = newTitle.trim().substring(0, 50); // 限制长度
@@ -278,7 +310,7 @@ function deleteConversation(conversationId, event) {
 
     // 显示对话框
     dialog.style.display = 'flex';
-
+    
     return new Promise((resolve) => {
         const confirmBtn = dialog.querySelector('.btn-confirm');
         const cancelBtn = dialog.querySelector('.btn-cancel');
@@ -298,7 +330,7 @@ function deleteConversation(conversationId, event) {
         const handleConfirm = () => {
             // 执行删除
             window.conversations = window.conversations.filter(c => c.id !== conversationId);
-
+            
             // 处理当前对话
             if (conversationId === window.currentConversationId) {
                 if (window.conversations.length > 0) {
@@ -312,7 +344,7 @@ function deleteConversation(conversationId, event) {
                     loadConversation(newConv.id); // 新增关键调用
                 }
             }
-
+            
             // 更新界面
             renderConversationList();
             saveConversations();
@@ -350,7 +382,7 @@ function renameConversation(conversationId, currentTitle) {
     const inputField = dialog.querySelector('#renameInput');
     const errorHint = dialog.querySelector('.error-hint');
     const charCounter = dialog.querySelector('.char-counter');
-
+    
     // 初始化对话框状态
     inputField.value = currentTitle || '';
     errorHint.style.display = 'none';
@@ -432,99 +464,34 @@ function renameConversation(conversationId, currentTitle) {
     });
 }
 
-function setConversationPrompt(conversationId, currentPrompt = '') {
-    const dialog = document.getElementById('promptDialog');
-    if (!dialog) {
-        console.error('Prompt 对话框未找到');
+function setConversationPrompt(conversationId, currentPrompt) {
+    // 参数验证
+    if (!conversationId || !Array.isArray(window.conversations)) {
+        console.error('无效的对话ID或对话列表');
         return Promise.resolve(false);
     }
 
-    const fileDropArea = dialog.querySelector('#fileDropArea');
-    const fileInput = dialog.querySelector('#fileInput');
-    const promptInput = dialog.querySelector('#promptInput');
-    const errorHint = dialog.querySelector('.error-hint');
-    const charCounter = dialog.querySelector('.char-counter');
-    const filePreview = document.createElement('div');
-    filePreview.className = 'file-preview';
-    fileDropArea.appendChild(filePreview);
-
-    // 初始化状态
-    promptInput.value = currentPrompt || '';
-    charCounter.textContent = `${promptInput.value.length}/1000`;
-    dialog.style.display = 'flex';
-    let selectedFile = null;
-
-    // 文件拖放功能
-    fileDropArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        fileDropArea.classList.add('highlight');
-    });
-
-    fileDropArea.addEventListener('dragleave', () => {
-        fileDropArea.classList.remove('highlight');
-    });
-
-    fileDropArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        fileDropArea.classList.remove('highlight');
-        if (e.dataTransfer.files.length) {
-            handleFileSelect(e.dataTransfer.files[0]);
-        }
-    });
-
-    // 文件选择按钮
-    dialog.querySelector('.btn-select-file').addEventListener('click', () => {
-        fileInput.click();
-    });
-
-    fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length) {
-            handleFileSelect(e.target.files[0]);
-        }
-    });
-
-    // 处理文件选择
-    function handleFileSelect(file) {
-        if (!file.type.match('text.*') &&
-            !file.type.match('application/pdf') &&
-            !file.name.match(/\.(txt|md|pdf|doc|docx)$/i)) {
-            errorHint.textContent = '不支持的文件类型，请选择文本文件';
-            errorHint.style.display = 'block';
-            return;
-        }
-
-        selectedFile = file;
-
-        // 显示文件信息
-        filePreview.innerHTML = `
-            <div class="file-preview-header">
-                <span class="file-preview-name">${file.name}</span>
-                <button class="file-preview-remove" title="移除文件">&times;</button>
-            </div>
-            <div class="file-preview-content">加载中...</div>
-        `;
-
-        filePreview.classList.add('active');
-
-        // 移除文件按钮
-        filePreview.querySelector('.file-preview-remove').addEventListener('click', (e) => {
-            e.stopPropagation();
-            selectedFile = null;
-            filePreview.classList.remove('active');
-            fileInput.value = '';
-        });
-
-        // 读取文件内容
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const content = e.target.result;
-            filePreview.querySelector('.file-preview-content').textContent =
-                content.length > 1000 ? content.substring(0, 1000) + '...' : content;
-        };
-        reader.readAsText(file);
+    const dialog = document.getElementById('promptDialog');
+    if (!dialog) {
+        console.error('找不到指令设置对话框');
+        return Promise.resolve(false);
     }
 
+    // 获取对话框元素
+    const textarea = dialog.querySelector('#promptInput');
+    const errorHint = dialog.querySelector('.error-hint');
+    const charCounter = dialog.querySelector('.char-counter');
+
+    // 初始化对话框状态
+    textarea.value = currentPrompt || '';
+    errorHint.textContent = '';
+    errorHint.style.display = 'none';
+    charCounter.textContent = `${textarea.value.length}/500`;
+    dialog.style.display = 'flex';
+    textarea.focus();
+
     return new Promise((resolve) => {
+        // 对话框元素引用
         const confirmBtn = dialog.querySelector('.btn-confirm');
         const cancelBtn = dialog.querySelector('.btn-cancel');
         const closeBtn = dialog.querySelector('.dialog-close');
@@ -532,66 +499,55 @@ function setConversationPrompt(conversationId, currentPrompt = '') {
         // 清理函数
         const cleanUp = () => {
             dialog.style.display = 'none';
-            filePreview.remove();
-            promptInput.removeEventListener('input', handleInput);
+            textarea.removeEventListener('input', handleInput);
             confirmBtn.removeEventListener('click', handleConfirm);
             cancelBtn.removeEventListener('click', handleCancel);
             closeBtn.removeEventListener('click', handleCancel);
             dialog.removeEventListener('click', handleOverlayClick);
-            promptInput.removeEventListener('keydown', handleKeyDown);
+            textarea.removeEventListener('keydown', handleKeyDown);
         };
 
         // 输入处理
         const handleInput = (e) => {
             const value = e.target.value;
-            charCounter.textContent = `${value.length}/1000`;
-            charCounter.style.color = value.length > 900 ? '#ff4444' : '#666';
+            charCounter.textContent = `${value.length}/500`;
+            charCounter.style.color = value.length > 450 ? '#ff4444' : '#666';
         };
 
         // 确认处理
-        const handleConfirm = async () => {
-            try {
-                const promptContent = "/* 获取内容逻辑 */";
-
-                // 更新本地对话数据
-                const conversation = window.conversations.find(c => c.id === conversationId);
-                if (conversation) {
-                    conversation.prompt = promptContent;
-                    localStorage.setItem('conversations', JSON.stringify(window.conversations));
-                }
-
-                // 发送系统消息
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        conversationId,
-                        message: `系统指令：加载以下人设——\n${promptContent}`,
-                        isSystem: true // 标记为系统消息
-                    })
-                });
-
-                const data = await response.json();
-                if (!data.ok) throw new Error(data.error);
-
-                cleanUp();
-                resolve(true);
-
-            } catch (error) {
-                errorHint.textContent = `人设加载失败: ${error.message}`;
+        const handleConfirm = () => {
+            const newPrompt = textarea.value.trim();
+            
+            // 验证规则
+            if (!newPrompt) {
+                errorHint.textContent = '指令内容不能为空';
                 errorHint.style.display = 'block';
+                textarea.style.borderColor = '#ff4444';
+                return;
             }
-        };
 
-        // 读取文件内容
-        function readFileContent(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.onerror = (e) => reject(new Error('文件读取失败'));
-                reader.readAsText(file);
-            });
-        }
+            // 查找对话
+            const conversation = window.conversations.find(c => c.id === conversationId);
+            if (!conversation) {
+                console.error(`对话${conversationId}不存在`);
+                cleanUp();
+                return resolve(false);
+            }
+
+            // 无修改直接返回
+            if (newPrompt === (conversation.prompt || '')) {
+                cleanUp();
+                return resolve(false);
+            }
+
+            // 保存数据
+            conversation.prompt = newPrompt.substring(0, 500);
+            saveConversations();
+            
+            // 关闭对话框
+            cleanUp();
+            resolve(true);
+        };
 
         // 取消处理
         const handleCancel = () => {
@@ -604,49 +560,31 @@ function setConversationPrompt(conversationId, currentPrompt = '') {
             if (e.target === dialog) handleCancel();
         };
 
-        // 键盘事件处理
+        // 快捷键支持
         const handleKeyDown = (e) => {
-            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                handleConfirm();
-            }
+            if (e.key === 'Enter' && e.ctrlKey) handleConfirm();
         };
 
         // 事件绑定
-        promptInput.addEventListener('input', handleInput);
-        confirmBtn.addEventListener('click', handleConfirm);
-        cancelBtn.addEventListener('click', handleCancel);
-        closeBtn.addEventListener('click', handleCancel);
-        dialog.addEventListener('click', handleOverlayClick);
-        promptInput.addEventListener('keydown', handleKeyDown);
+        textarea.addEventListener('input', handleInput);
+        confirmBtn.addEventListener('click', handleConfirm, { once: true });
+        cancelBtn.addEventListener('click', handleCancel, { once: true });
+        closeBtn.addEventListener('click', handleCancel, { once: true });
+        dialog.addEventListener('click', handleOverlayClick, { once: true });
+        textarea.addEventListener('keydown', handleKeyDown, { once: true });
     });
+}
+
+function sendMessage() {
+    const currentConv = window.conversations.find(c => c.id === window.currentConversationId);
+    const systemPrompt = currentConv?.prompt || "默认指令";
 }
 
 // DOM初始化（添加事件协调）
 document.addEventListener('DOMContentLoaded', () => {
     initConversations();
-
     document.getElementById('newConversationBtn').addEventListener('click', () => createNewConversation());
     document.getElementById('newChatBtn').addEventListener('click', () => createNewConversation());
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('.set-prompt-btn')) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            const conversationItem = e.target.closest('.conversation-item');
-            if (conversationItem) {
-                const conversationId = window.currentConversationId;
-                const conversation = window.conversations.find(c => c.id === conversationId);
-                const currentPrompt = conversation?.prompt || '';
-
-                setConversationPrompt(conversationId, currentPrompt)
-                    .then(success => {
-                        if (success) {
-                            console.log('Prompt设置成功');
-                        }
-                    });
-            }
-        }
-    });
 });
 
 // 初始化执行

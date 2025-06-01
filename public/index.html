@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <title>智能侧边栏系统</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="css/chat.css">
     <link rel="stylesheet" href="css/update.css">
 </head>
+
 <body>
     <!-- 侧边栏容器 -->
     <div class="sidebar-container">
@@ -54,18 +56,18 @@
                         <button class="action-btn">系统设置</button>
                     </div>
                 </div>
-                
+
                 <div class="content-view" id="historyView">
                     <h3>历史对话记录</h3>
                     <ul class="conversation-list" id="conversationList">
-                    <!-- 对话列表将通过JavaScript动态生成 -->
+                        <!-- 对话列表将通过JavaScript动态生成 -->
                     </ul>
                     <button class="new-conversation-btn" id="newConversationBtn">+ 新建对话</button>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <!-- 主内容区域 -->
     <div class="main-content" id="mainContent">
         <div class="chat-container">
@@ -76,7 +78,7 @@
                 <!-- 消息将通过JavaScript动态添加 -->
             </div>
         </div>
-        
+
         <div class="input-area">
             <div class="input-container">
                 <textarea placeholder="输入消息..." rows="1" id="messageInput"></textarea>
@@ -84,47 +86,246 @@
             </div>
         </div>
     </div>
-    
-        <div id="deleteDialog" class="dialog-overlay">
-            <div class="dialog-card danger">
-                <div class="dialog-header">
-                    <h3>删除对话</h3>
-                    <button class="dialog-close">&times;</button>
-                </div>
-                <div class="dialog-body">
-                    <i class="dialog-icon fas fa-trash-alt"></i>
-                    <p>确定要永久删除这个对话吗？</p>
-                    <p class="dialog-warning">此操作不可撤销！</p>
-                </div>
-                <div class="dialog-footer">
-                    <button class="btn btn-cancel">取消</button>
-                    <button class="btn btn-confirm">确认删除</button>
-                </div>
-            </div>
-        </div>
 
-        <div id="renameDialog" class="dialog-overlay">
-            <div class="dialog-card info">
-                <div class="dialog-header">
-                    <h3>重命名对话</h3>
-                    <button class="dialog-close">&times;</button>
+        <!-- 右侧固定侧边栏 -->
+    <div class="sidebar-right">
+        <div class="sidebar-right-header">
+            <div class="sidebar-right-title">系统工具面板</div>
+            <div>
+                <i class="fas fa-sync-alt icon-btn" title="刷新" id="refreshBtn"></i>
+                <i class="fas fa-info-circle icon-btn" title="帮助" id="helpBtn"></i>
+            </div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tab active" data-tab="settings">系统设置</div>
+            <div class="tab" data-tab="tools">工具面板</div>
+            <div class="tab" data-tab="files">文件管理</div>
+        </div>
+        
+        <div class="sidebar-right-content">
+            <!-- 系统设置视图 -->
+            <div class="tab-content active" id="settingsTab">
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-user-cog"></i> 用户偏好
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-label">
+                            <div>深色模式</div>
+                            <div class="settings-description">启用更适合夜间使用的界面</div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="darkModeToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <!-- 已删除通知提醒设置项 -->
                 </div>
-                <div class="dialog-body">
-                    <i class="dialog-icon fas fa-edit"></i>
-                    <input type="text" id="renameInput" 
-                        placeholder="输入新标题" 
-                        maxlength="50"
-                        class="title-input">
-                    <!-- 添加这两个元素 -->
-                    <span class="error-hint"></span>
-                    <span class="char-counter">0/50</span>
+                
+                <div class="divider"></div>
+                
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-robot"></i> AI设置
+                    </div>
+                    
+                    <div class="settings-item">
+                        <div class="settings-label">
+                            <div>模型选择</div>
+                            <div class="settings-description">GPT-4 Turbo (128K上下文)</div>
+                        </div>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <!-- 已删除创造力控制设置项 -->
                 </div>
-                <div class="dialog-footer">
-                    <button class="btn btn-cancel">取消</button>
-                    <button class="btn btn-confirm">确认</button>
+            </div>
+
+            <!-- 工具视图 -->
+            <div class="tab-content" id="toolsTab">
+                <h3>MCP 服务面板</h3>
+                <p>管理与监控 MCP 服务状态</p>
+                
+                <!-- 纵向排列的长条状 MCP 服务按钮 -->
+                <div class="mcp-buttons-container">
+                    <div class="mcp-button" data-service="mcp1">
+                        <div class="mcp-button-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="mcp-button-text">MCP1</div>
+                        <div class="mcp-button-status active">运行中</div>
+                    </div>
+                    
+                    <div class="mcp-button" data-service="mcp2">
+                        <div class="mcp-button-icon">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div class="mcp-button-text">MCP2</div>
+                        <div class="mcp-button-status active">运行中</div>
+                    </div>
+                    
+                    <div class="mcp-button" data-service="mcp3">
+                        <div class="mcp-button-icon">
+                            <i class="fas fa-plug"></i>
+                        </div>
+                        <div class="mcp-button-text">MCP3</div>
+                        <div class="mcp-button-status warning">部分降级</div>
+                    </div>
+                    
+                    <div class="mcp-button" data-service="mcp4">
+                        <div class="mcp-button-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="mcp-button-text">MCP4</div>
+                        <div class="mcp-button-status active">运行中</div>
+                    </div>
+                    
+                    <div class="mcp-button" data-service="mcp5">
+                        <div class="mcp-button-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="mcp-button-text">MCP5</div>
+                        <div class="mcp-button-status active">运行中</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 文件视图 -->
+            <div class="tab-content" id="filesTab">
+                <h3>文件管理</h3>
+                <p>管理上传的文档和资源</p>
+                
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-cloud-upload-alt"></i> 上传文件
+                    </div>
+                    
+                    <div class="file-preview">
+                        <i class="fas fa-file-alt file-icon"></i>
+                        <div class="file-info">
+                            <div class="file-name">项目需求文档.pdf</div>
+                            <div class="file-size">2.4 MB</div>
+                        </div>
+                        <button class="remove-file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="file-preview">
+                        <i class="fas fa-file-code file-icon"></i>
+                        <div class="file-info">
+                            <div class="file-name">前端代码.zip</div>
+                            <div class="file-size">1.2 MB</div>
+                        </div>
+                        <button class="remove-file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <button class="action-btn" id="addFileBtn">
+                        <i class="fas fa-plus"></i> 添加文件
+                    </button>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <div class="settings-section">
+                    <div class="settings-title">
+                        <i class="fas fa-folder-open"></i> 最近文件
+                    </div>
+                    
+                    <div class="settings-item">
+                        <i class="fas fa-file-word file-icon"></i>
+                        <div class="settings-label">
+                            <div>设计规范.docx</div>
+                            <div class="settings-description">昨天修改</div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-item">
+                        <i class="fas fa-file-excel file-icon"></i>
+                        <div class="settings-label">
+                            <div>项目计划表.xlsx</div>
+                            <div class="settings-description">3天前访问</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="deleteDialog" class="dialog-overlay">
+        <div class="dialog-card danger">
+            <div class="dialog-header">
+                <h3>删除对话</h3>
+                <button class="dialog-close">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <i class="dialog-icon fas fa-trash-alt"></i>
+                <p>确定要永久删除这个对话吗？</p>
+                <p class="dialog-warning">此操作不可撤销！</p>
+            </div>
+            <div class="dialog-footer">
+                <button class="btn btn-cancel">取消</button>
+                <button class="btn btn-confirm">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="renameDialog" class="dialog-overlay">
+        <div class="dialog-card info">
+            <div class="dialog-header">
+                <h3>重命名对话</h3>
+                <button class="dialog-close">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <i class="dialog-icon fas fa-edit"></i>
+                <input type="text" id="renameInput" placeholder="输入新标题" maxlength="50" class="title-input">
+                <!-- 添加这两个元素 -->
+                <span class="error-hint"></span>
+                <span class="char-counter">0/50</span>
+            </div>
+            <div class="dialog-footer">
+                <button class="btn btn-cancel">取消</button>
+                <button class="btn btn-confirm">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="promptDialog" class="dialog-overlay">
+        <div class="dialog-card info">
+            <div class="dialog-header">
+                <h3>设置AI人设</h3>
+                <button class="dialog-close">&times;</button>
+            </div>
+            <div class="dialog-body">
+                <div class="file-drop-area" id="fileDropArea">
+                    <i class="fas fa-file-upload"></i>
+                    <p>拖放人设文件到这里</p>
+                    <p class="small-hint">(支持.txt, .md, .pdf等文本格式)</p>
+                    <input type="file" id="fileInput" accept=".txt,.md,.pdf,.doc,.docx">
+                    <button class="btn btn-select-file">选择文件</button>
+                </div>
+
+                <div class="text-divider">
+                    <span>或</span>
+                </div>
+
+                <div class="text-input-area">
+                    <textarea id="promptInput" placeholder="输入AI人物设定..."></textarea>
+                    <div class="dialog-meta">
+                        <span class="char-counter">0/1000</span>
+                        <span class="error-hint"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <button class="btn btn-cancel">取消</button>
+                <button class="btn btn-confirm">加载人设</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // 在init.js之前定义
@@ -133,9 +334,11 @@
     </script>
 
     <script src="js/sidebar.js"></script>
+    <script src="js/script.js"></script>
     <script src="js/init.js"></script>
     <script src="js/historychat.js"></script>
     <script src="js/chat.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>

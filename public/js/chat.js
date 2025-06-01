@@ -2,7 +2,7 @@
 class ChatUI {
   constructor() {
     this.messageInput = document.getElementById('messageInput');
-    this.sendButton   = document.getElementById('sendButton');
+    this.sendButton = document.getElementById('sendButton');
 
     if (!this.messageInput || !this.sendButton) {
       throw new Error('关键DOM元素未找到,请检查HTML和脚本加载顺序');
@@ -72,15 +72,20 @@ class ChatUI {
 
     // 3. 调用后端接口
     try {
-      const resp = await fetch('/api/chat', {
+      const conversation = window.conversations.find(c => c.id === window.currentConversationId);
+      if (!conversation) throw new Error('对话不存在');
+
+      // 发送标准消息（包含当前prompt）
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           conversationId: window.currentConversationId,
-          message: content
+          message: content,
+          prompt: conversation.prompt || '' // 自动附加当前prompt
         })
       });
-      const { ok, reply, error } = await resp.json();
+      const { ok, reply, error } = await response.json();
       if (!ok) throw new Error(error);
 
       // 4. 渲染 AI 回复

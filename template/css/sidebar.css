@@ -1,0 +1,251 @@
+/* 侧边栏容器 */
+.sidebar-container {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    z-index: 100;
+}
+
+/* 主侧边栏 */
+.sidebar-primary {
+    width: 250px;
+    background-color: #2d3748;
+    color: white;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: -250px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 0 12px 12px 0;
+}
+
+.sidebar-primary.active {
+    left: 0;
+}
+
+.sidebar-primary-nav {
+    padding: 15px;
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-primary-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+/* 图标侧边栏 */
+.sidebar-secondary {
+    width: 60px;
+    background-color: #1a202c;
+    color: white;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    gap: 20px;
+    position: absolute;
+    left: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-secondary.hidden {
+    left: -60px;
+}
+
+/* 主内容区域 */
+.main-content {
+    padding: 20px;
+    transition: margin-left 0.3s;
+    margin-left: 60px;
+    max-width: 800px;
+    margin-right: auto;
+    margin-left: auto;
+    position: relative;
+}
+
+.main-content.primary-active {
+    margin-left: 250px;
+}
+
+/* 按钮样式 */
+.icon-btn {
+    background: transparent;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.icon-btn.active {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* 动态内容样式 */
+.content-view {
+    display: none;
+    padding: 10px;
+    overflow-y: auto;
+    transition: opacity 0.3s ease;
+}
+
+.content-view.active {
+    display: block;
+}
+
+.assistant-message {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.assistant-message p {
+    margin: 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 动态内容按钮样式 */
+.action-btn {
+    background: #4a5568;
+    color: white;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 10px;
+    transition: background 0.2s;
+    text-align: left;
+}
+
+.action-btn:hover {
+    background: #2d3748;
+}
+
+.conversation-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+}
+
+.conversation-item {
+    padding: 12px;
+    margin-bottom: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.conversation-item.active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.conversation-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(2px);
+}
+
+.conversation-date {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.conversation-title {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.new-conversation-btn {
+    width: 100%;
+    padding: 10px;
+    background: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-weight: 500;
+}
+
+.new-conversation-btn:hover {
+    background: #3182ce;
+}
+
+/* 对话头部和删除按钮样式 */
+.conversation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.delete-conversation-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-conversation-btn:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* 对话操作按钮样式 */
+.conversation-actions {
+    display: flex;
+    gap: 4px;
+}
+
+.rename-conversation-btn,
+.delete-conversation-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rename-conversation-btn:hover,
+.delete-conversation-btn:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
+}

@@ -210,3 +210,286 @@
     from { background-color: #ffff99; }
     to { background-color: transparent; }
 }
+
+/* 文件拖放区域样式 */
+.file-drop-area {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+    position: relative;
+}
+
+.file-drop-area.highlight {
+    border-color: #4CAF50;
+    background-color: rgba(76, 175, 80, 0.05);
+}
+
+.file-drop-area i {
+    font-size: 48px;
+    color: #4CAF50;
+    margin-bottom: 10px;
+}
+
+.file-drop-area p {
+    margin: 5px 0;
+    color: #555;
+}
+
+.file-drop-area .small-hint {
+    font-size: 12px;
+    color: #888;
+}
+
+.file-drop-area input[type="file"] {
+    display: none;
+}
+
+.btn-select-file {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn-select-file:hover {
+    background-color: #e0e0e0;
+}
+
+/* 分隔线样式 */
+.text-divider {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    color: #888;
+}
+
+.text-divider::before,
+.text-divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.text-divider::before {
+    margin-right: 10px;
+}
+
+.text-divider::after {
+    margin-left: 10px;
+}
+
+/* 文本区域样式 */
+.text-input-area {
+    margin-top: 15px;
+}
+
+#promptInput {
+    width: 100%;
+    min-height: 150px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+#promptInput:focus {
+    border-color: #4CAF50;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+}
+
+/* 文件预览区域 */
+.file-preview {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 4px;
+    display: none;
+}
+
+.file-preview.active {
+    display: block;
+}
+
+.file-preview-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.file-preview-name {
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-preview-remove {
+    color: #ff4444;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.file-preview-content {
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* 深色模式基础样式 */
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #e0e0e0;
+}
+
+/* 侧边栏深色模式 */
+#sidebarSecondary.dark-mode,
+#sidebarPrimary.dark-mode,
+.sidebar-right.dark-mode {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+
+/* 消息区域深色模式 */
+.dark-mode .messages-container {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+/* 输入区域深色模式 */
+.dark-mode .input-area {
+    background-color: #252525;
+    border-color: #333;
+}
+
+/* 对话框深色模式 */
+.dark-mode .dialog-card {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+
+/* 设置项深色模式 */
+.dark-mode .settings-item {
+    background-color: #333;
+}
+
+/* 工具卡片深色模式 */
+.dark-mode .tool-card {
+    background-color: #333;
+    color: #e0e0e0;
+}
+
+/* 文件预览深色模式 */
+.dark-mode .file-preview {
+    background-color: #333;
+}
+
+/* MCP 服务按钮容器 */
+.mcp-buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+/* MCP 服务按钮样式 */
+.mcp-button {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-left: 4px solid #4299e1;
+}
+
+.mcp-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    background-color: #f8f9fa;
+}
+
+.mcp-button-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #e3f2fd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    color: #2196f3;
+    font-size: 16px;
+}
+
+.mcp-button-text {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.mcp-button-status {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.mcp-button-status.active {
+    background-color: #e6f4ea;
+    color: #137333;
+    border: 1px solid #c6e7c9;
+}
+
+.mcp-button-status.warning {
+    background-color: #fef7e0;
+    color: #e37400;
+    border: 1px solid #fde293;
+}
+
+/* 深色模式下的 MCP 按钮 */
+body.dark-mode .mcp-button {
+    background-color: #2d3748;
+    border-left: 4px solid #63b3ed;
+}
+
+body.dark-mode .mcp-button:hover {
+    background-color: #364152;
+}
+
+body.dark-mode .mcp-button-icon {
+    background-color: #2a4365;
+    color: #90cdf4;
+}
+
+body.dark-mode .mcp-button-text {
+    color: #e2e8f0;
+}
+
+body.dark-mode .mcp-button-status.active {
+    background-color: #1e3a1e;
+    color: #81c995;
+    border: 1px solid #2d5a2d;
+}
+
+body.dark-mode .mcp-button-status.warning {
+    background-color: #3d2e00;
+    color: #ffb84d;
+    border: 1px solid #5e4a00;
+}

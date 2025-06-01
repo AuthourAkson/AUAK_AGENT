@@ -73,14 +73,50 @@
     left: -60px;
 }
 
+/* 右侧固定侧边栏 */
+.sidebar-right {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 300px;
+    background-color: #2d3748;
+    color: white;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 99;
+    overflow: hidden;
+}
+
+.sidebar-right-header {
+    padding: 15px 20px;
+    background: rgba(45, 55, 72, 0.6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-right-title {
+    font-size: 1.2rem;
+    font-weight: 500;
+    font-family: 'SourceHanSans', sans-serif;
+}
+
+.sidebar-right-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+}
+
 /* 主内容区域 */
 .main-content {
     padding: 20px;
     transition: margin-left 0.3s;
     margin-left: 60px;
-    max-width: 800px;
-    margin-right: auto;
-    margin-left: auto;
+    margin-right: 300px; /* 为右侧边栏留出空间 */
+    max-width: calc(100% - 360px); /* 60px + 300px */
     position: relative;
 }
 
@@ -124,7 +160,7 @@
 }
 
 .assistant-message {
-    background: rgba(96, 197, 190, 0.1);
+    background: rgba(85, 86, 85, 0.1);
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 15px;
@@ -133,8 +169,8 @@
 .assistant-message p {
     margin: 0;
     font-size: 14px;
-    font-family:Hooskai, SourceHanSans;
-    color: rgba(26, 27, 27, 0.9);
+    font-family: 'Hooskai', 'SourceHanSans';
+    color: rgba(128, 123, 123, 0.9);
 }
 
 /* 动态内容按钮样式 */
@@ -149,6 +185,7 @@
     margin-bottom: 10px;
     transition: background 0.2s;
     text-align: left;
+    font-family: 'SourceHanSans', sans-serif;
 }
 
 .action-btn:hover {
@@ -172,6 +209,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+    font-family: 'SourceHanSans', sans-serif;
 }
 
 .conversation-item.active {
@@ -205,6 +243,7 @@
     cursor: pointer;
     transition: background 0.2s;
     font-weight: 500;
+    font-family: 'SourceHanSans', sans-serif;
 }
 
 .new-conversation-btn:hover {
@@ -262,4 +301,204 @@
 .delete-conversation-btn:hover {
     color: rgba(255, 255, 255, 0.9);
     background: rgba(255, 255, 255, 0.1);
+}
+
+/* 右侧边栏特定样式 */
+.tab-container {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 15px;
+    font-family: 'SourceHanSans', sans-serif;
+}
+
+.tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    position: relative;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.2s;
+}
+
+.tab.active {
+    color: #63b3ed;
+}
+
+.tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: #63b3ed;
+}
+
+.tab:hover {
+    color: #63b3ed;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.settings-section {
+    margin-bottom: 25px;
+}
+
+.settings-title {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    color: #63b3ed;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'SourceHanSans', sans-serif;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+    margin-right: 10px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #4a5568;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4299e1;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-family: 'SourceHanSans', sans-serif;
+}
+
+.settings-label {
+    flex: 1;
+}
+
+.settings-description {
+    font-size: 0.85rem;
+    color: #a0aec0;
+    margin-top: 4px;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.tool-card {
+    background: rgba(74, 85, 104, 0.3);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tool-card:hover {
+    background: rgba(66, 153, 225, 0.2);
+    transform: translateY(-3px);
+}
+
+.tool-icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #63b3ed;
+}
+
+.tool-name {
+    font-size: 0.9rem;
+    font-family: 'SourceHanSans', sans-serif;
+}
+
+.divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 15px 0;
+}
+
+.file-preview {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    margin-top: 10px;
+    font-family: 'SourceHanSans', sans-serif;
+}
+
+.file-icon {
+    margin-right: 10px;
+    font-size: 18px;
+    color: #63b3ed;
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-name {
+    font-size: 0.9rem;
+    margin-bottom: 3px;
+}
+
+.file-size {
+    font-size: 0.75rem;
+    color: #a0aec0;
+}
+
+.remove-file {
+    background: transparent;
+    border: none;
+    color: #e53e3e;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
 }

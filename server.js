@@ -8,7 +8,6 @@ import EmbeddingRetriever from './dist/EmbeddingRetriever.js';
 
 const outDirName = 'output';
 
-// 初始化 EmbeddingRetriever 并加载知识库
 async function initializeRetriever() {
   const embeddingRetriever = new EmbeddingRetriever('BAAI/bge-m3');
   const knowledgeDir = path.join(process.cwd(), 'knowledge');
@@ -39,17 +38,15 @@ async function initializeRetriever() {
   return embeddingRetriever;
 }
 
-// 根据用户问题从知识库中检索相关上下文
 async function retrieveContext(query, retriever) {
   const contextArray = await retriever.retrieve(query, 3);
   return contextArray.join('\n');
 }
 
 async function bootstrap() {
-  // 1. 初始化知识检索器
+
   const retriever = await initializeRetriever();
 
-  // 2. 初始化 MCPClient 和 Agent
   const fetchMCP = new MCPClient('mcp-server-fetch', 'uvx', ['mcp-server-fetch']);
   const fileMCP = new MCPClient(
     'mcp-server-file',
@@ -74,22 +71,47 @@ async function bootstrap() {
   );
   await agent.init();
 
-  // 3. 启动 Express 服务
+  //启动 Express 服务
   const app = express();
   app.use(bodyParser.json());
   app.use(express.static(path.join(process.cwd(), 'public')));
 
-  // 4. 定义聊天接口，带知识上下文
+  //定义聊天接口，带知识上下文，直接做到连贯的效果
   app.post('/api/chat', async (req, res) => {
     try {
-      const { conversationId, message } = req.body;
-      const context = await retrieveContext(message, retriever);
-      const fullPrompt = `${context}\n\n${message}`;
+      const { conversationId, message, prompt = '', isSystem = false } = req.body;
+
+      // 构建完整的提示
+      let fullPrompt = message;
+      if (prompt) {
+        fullPrompt = `${prompt}\n\n${message}`;
+      }
+
+      // 调用AI接口
       const aiReply = await agent.invoke(fullPrompt);
-      return res.json({ ok: true, reply: aiReply });
+
+      // 系统消息不返回给前端显示
+      if (isSystem) {
+        return res.json({
+          ok: true,
+          silent: true, // 静默标记
+          reply: "人设加载完成"
+        });
+      }
+
+      // 正常聊天回复
+      return res.json({
+        ok: true,
+        reply: aiReply
+      });
+
     } catch (e) {
-      console.error(e);
-      return res.status(500).json({ ok: false, error: e.message });
+      console.error('API错误:', e);
+      return res.status(500).json({
+        ok: false,
+        error: e.message,
+        stack: process.env.NODE_ENV === 'development' ? e.stack : undefined
+      });
     }
   });
 
